@@ -1,0 +1,23 @@
+{
+  "name": "浙大课程表同步",
+  "version": "0.0.1",
+  "description": "此插件用于将浙大研究生的课表同步到Google日历",
+  "icons": {
+    "128":"icon.png",
+    "48":"icon.png"
+  },
+  "browser_action": {
+    "default_title": "课程表同步助手",
+    "default_icon": "icon.png",
+    "default_popup":"index.html"
+  },
+  //"background_page":"background.html",
+  "options_page": "options.html",
+  "permissions": [
+    "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp?xh=",
+    "https://www.googleapis.com/auth/calendar",
+    "tabs"
+  ],
+  "homepage_url":"http://www.zjustu.org/"
+  //"update_url":"http://nav.8866.org/daohang/plugin/update.xml"
+}
