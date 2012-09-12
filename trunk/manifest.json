@@ -1,19 +1,22 @@
-{
-  "name": "Õã´ó¿Î³Ì±íÍ¬²½",
+ï»¿{
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
+  "name": "æµ™å¤§è¯¾ç¨‹è¡¨åŒæ­¥",
   "version": "0.0.1",
-  "description": "´Ë²å¼şÓÃÓÚ½«Õã´óÑĞ¾¿ÉúµÄ¿Î±íÍ¬²½µ½GoogleÈÕÀú",
+  "description": "æ­¤æ’ä»¶ç”¨äºå°†æµ™å¤§ç ”ç©¶ç”Ÿçš„è¯¾è¡¨åŒæ­¥åˆ°Googleæ—¥å†",
   "icons": {
     "128":"icon.png",
     "48":"icon.png"
   },
   "browser_action": {
-    "default_title": "¿Î³Ì±íÍ¬²½ÖúÊÖ",
+    "default_title": "è¯¾ç¨‹è¡¨åŒæ­¥åŠ©æ‰‹",
     "default_icon": "icon.png",
     "default_popup":"index.html"
   },
   //"background_page":"background.html",
   "options_page": "options.html",
   "permissions": [
+    "https://apis.google.com/",
     "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp?xh=",
     "https://www.googleapis.com/auth/calendar",
     "tabs"
