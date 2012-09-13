@@ -19,6 +19,7 @@
     "https://apis.google.com/",
     "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp?xh=",
     "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/calendar.readonly",
     "tabs"
   ],
   "homepage_url":"http://www.zjustu.org/"
