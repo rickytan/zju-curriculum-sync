@@ -17,9 +17,11 @@
   "options_page": "options.html",
   "permissions": [
     "https://apis.google.com/",
-    "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp?xh=",
+    "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp",
+    "http://g.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp",
     "https://www.googleapis.com/auth/calendar",
     "https://www.googleapis.com/auth/calendar.readonly",
+    "<all_urls>",
     "tabs"
   ],
   "homepage_url":"http://www.zjustu.org/"
