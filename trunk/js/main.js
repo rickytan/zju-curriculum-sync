@@ -20,7 +20,7 @@ $(function(){
     var clientId = '817070761549.apps.googleusercontent.com';
     var scope = 'https://www.googleapis.com/auth/calendar';
     
-    var HOST = "http://g.zju.edu.cn/";
+    var HOST = "http://grsinfo.zju.edu.cn/";
     var LOGIN = "login_s_code.jsp";
     var COURSE = "cultivate/selectles/selectbefore/xkhxkbcx.jsp";
     function auth() {
@@ -80,46 +80,22 @@ $(function(){
                 }, 
                 error: function(xhr, textStatus, errorThrown) { 
                     $.get(HOST+COURSE,function(html){
-                        $("#builder").append(html);
+						var script = html.match(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi)[0];
+						html = html.replace(/<head\b[^<]*(?:(?!<\/head>)<[^<]*)*<\/head>/gi,"");
+						html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"");
+                        document.getElementById("builder").innerHTML = html;
+						script = /<script\b[^>]*>([\s\S]*?)<\/script>/gi.exec(script)[1];
+						var s = document.createElement("script");
+						s.setAttribute("type","text/javascript");
+						s.innerHTML = script;
+						document.getElementsByTagName("head")[0].appendChild(s);
                         loadjs("js/graduate.parser.js",function(){
-                            Parser.parse($("#builder table#kbT1"));
+                            Parser.parse(document.getElementById("kbT1"));
                         });
                     });
                 }
             });
         }
-        return false;
-        var frame = document.createElement("iframe");
-        $(frame).attr("name","target");
-        document.body.appendChild(frame);
-        
-        frame.onreadystatechange = function () {
-            loadjs("js/graduate.parser.js",function(){
-                Parser.parse(document.body);
-            });
-        }
-        frame.onload = function() {
-            var doc = this.document;
-            if(this.contentDocument)
-                        doc = this.contentDocument; // For NS6
-                else if(this.contentWindow)
-                        doc = this.contentWindow.document; // For IE5.5 and IE6
-                // Put the content in the iframe
-                doc.open();
-                doc.writeln("<html><body>test</body></html>");
-                doc.close();
-            if (window.frames["target"].location.href == HOST+LOGIN) {
-                
-            }
-            else {
-                loadjs("js/graduate.parser.js",function(){
-                    Parser.parse(window.frames["target"].document.body);
-                });
-            }
-        }
-        //$(frame).css({width:"0px",height:"0px",border:"0px"}).attr("name","target");
-        this.action = HOST+LOGIN;
-        this.target = "target";
         return false;
     });
 });
