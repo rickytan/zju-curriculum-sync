@@ -55,7 +55,7 @@ $(function(){
         }
     }
     function check_login_info() {
-        return false;
+        return true;
     }
     $("#auth").click(auth);
     $("#login").submit(function(){
@@ -80,13 +80,15 @@ $(function(){
                 }, 
                 error: function(xhr, textStatus, errorThrown) { 
                     $.get(HOST+COURSE,function(html){
+                        $("#builder").append(html);
                         loadjs("js/graduate.parser.js",function(){
-                            Parser.parse(html);
+                            Parser.parse($("#builder table#kbT1"));
                         });
                     });
                 }
             });
         }
+        return false;
         var frame = document.createElement("iframe");
         $(frame).attr("name","target");
         document.body.appendChild(frame);
@@ -97,6 +99,15 @@ $(function(){
             });
         }
         frame.onload = function() {
+            var doc = this.document;
+            if(this.contentDocument)
+                        doc = this.contentDocument; // For NS6
+                else if(this.contentWindow)
+                        doc = this.contentWindow.document; // For IE5.5 and IE6
+                // Put the content in the iframe
+                doc.open();
+                doc.writeln("<html><body>test</body></html>");
+                doc.close();
             if (window.frames["target"].location.href == HOST+LOGIN) {
                 
             }
@@ -109,6 +120,6 @@ $(function(){
         //$(frame).css({width:"0px",height:"0px",border:"0px"}).attr("name","target");
         this.action = HOST+LOGIN;
         this.target = "target";
-        return true;
+        return false;
     });
 });
