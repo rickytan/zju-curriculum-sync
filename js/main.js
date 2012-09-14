@@ -90,7 +90,8 @@ $(function(){
 						s.innerHTML = script;
 						document.getElementsByTagName("head")[0].appendChild(s);
                         loadjs("js/graduate.parser.js",function(){
-                            Parser.parse(document.getElementById("kbT1"));
+                            var courses = Parser.parse(document.getElementById("kbT1"));
+							var a = 0;
                         });
                     });
                 }

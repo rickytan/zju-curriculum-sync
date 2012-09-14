@@ -59,9 +59,9 @@ function test() {
 			var tr = td.parentNode;
 			
 			var match = td.innerText.trim().match(/((.+)\b)*(.+)/gi)
-			var courseName = td[0];
-			var courseLocation = td[1];
-			var couserDuration = td[2];
+			var courseName = match[0];
+			var courseLocation = match[1];
+			var courseDuration = match[2];
 			var weekday = getActualCellIndex(td) - 1;
 			var courseStart = tr.rowIndex;
 			var courseLength = td.rowSpan;
