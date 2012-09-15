@@ -39,7 +39,7 @@ var oauth = ChromeExOAuth.initBackgroundPage({
     'authorize_url' : 'https://www.google.com/accounts/OAuthAuthorizeToken',
     'access_url' : 'https://www.google.com/accounts/OAuthGetAccessToken',
     'consumer_key' : '817070761549.apps.googleusercontent.com',
-    'consumer_secret' : 'TDJoD0-gB3MoQDTEBZg1JvId',
+    'consumer_secret' : 'syFNEiQY4IWg8uKWwwZcFjW8',
     'scope' : 'https://www.googleapis.com/auth/calendar',
     'app_name' : '浙大课表同步助手'
 });

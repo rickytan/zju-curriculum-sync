@@ -18,6 +18,7 @@ function loadjs(src,cb)
 }
 var oauth = oauth || chrome.extension.getBackgroundPage().oauth;
 var App = App || {};
+
 $(function(){
     var apiKey = "AIzaSyCwzksAHjNxNW505HsgOjr0PWjdsrFQWxg";
     var clientId = '817070761549.apps.googleusercontent.com';
@@ -58,15 +59,20 @@ $(function(){
         if (oauth.hasToken()) {
             $("#auth").text("退出").click(function(){
                 oauth.clearTokens();
-                $("login").slideUp("fast",function(){
+                $("#login").slideUp("fast",function(){
                     window.close();
                 });
             });
-            gapi.auth.setToken(oauth.getToken());
-            gapi.client.load("calendar","v3",function(){
-                $("#login").slideDown("slow");
-                var request = gapi.client.calendar.events.list({
-                    'calendarId': "ricky.tan.xin@gmail.com"
+            loadjs("https://apis.google.com/js/client.js",function(){
+                gapi.auth.setToken(oauth.getToken());
+                gapi.client.load("calendar","v3",function(){
+                    $("#login").slideDown("slow");
+                    var request = gapi.client.calendar.events.list({
+                        'calendarId': "ricky.tan.xin@gmail.com"
+                    });
+                    request.execute(function(resp){
+                        console.log(resp);
+                    });
                 });
             });
         }
@@ -127,8 +133,5 @@ $(function(){
         }
         return false;
     });
-});
-
-function clientloaded(){
     App.onload();
-}
+});
