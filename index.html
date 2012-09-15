@@ -1,14 +1,17 @@
 <html>
   <head>
-    <script src="./js/jquery-1.8.1.min.js"></script>
-    <script src="./js/main.js"></script>
-    <script src="https://apis.google.com/js/client.js?onload=clientloaded"></script>
+    <script type="text/javascript" src="./js/jquery-1.8.1.min.js"></script>
+    <script type="text/javascript" src="chrome_ex_oauthsimple.js"></script>
+    <script type="text/javascript" src="chrome_ex_oauth.js"></script>
+    <script type="text/javascript" src="background.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+    <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=clientloaded"></script>
   </head>
 
   <body>
-    <button id="auth">Authorize</button>
+    <a href="#" id="auth">登录</a>Google
     <ul id="events"></ul>
-    <form id="login" action="#" method="POST">
+    <form style="display: none" id="login" action="#" method="POST">
         <label for="user_id">学号：</label><input tabindex=1 type="text" name="user_id" maxlength="20" />
         <label for="">密码：</label><input tabindex=2 type="password" name="password" maxlength="20" />
         <input id="loginBtn" type="submit" value="登录" />
