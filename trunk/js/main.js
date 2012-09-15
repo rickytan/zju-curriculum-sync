@@ -7,14 +7,17 @@ function loadjs(src,cb)
         s.setAttribute('type','text/javascript');
         s.onreadystatechange = function(){
             if (this.readyState == 'complete' || this.readyState == 'loaded'){
-                this.onload();
+                try{
+                    this.onload();
+                }catch(e){}
             }
         };
-        s.onload = cb;	
+        s.onload = (cb!==undefined)?cb:null;	
         h.appendChild(s);
     }
 }
-
+var oauth = oauth || chrome.extension.getBackgroundPage().oauth;
+var App = App || {};
 $(function(){
     var apiKey = "AIzaSyCwzksAHjNxNW505HsgOjr0PWjdsrFQWxg";
     var clientId = '817070761549.apps.googleusercontent.com';
@@ -23,7 +26,7 @@ $(function(){
     var HOST = "http://grsinfo.zju.edu.cn/";
     var LOGIN = "login_s_code.jsp";
     var COURSE = "cultivate/selectles/selectbefore/xkhxkbcx.jsp";
-    function auth() {
+    App.auth = function () {
         gapi.auth.init(function(){
             var config = {
                 'client_id': clientId,
@@ -50,14 +53,41 @@ $(function(){
             });
             return false;
         });
-        function clientloaded() {
-            gapi.client.setApiKey(apiKey);
+    }
+    App.onauth = function() {
+        if (oauth.hasToken()) {
+            $("#auth").text("退出").click(function(){
+                oauth.clearTokens();
+                $("login").slideUp("fast",function(){
+                    window.close();
+                });
+            });
+            gapi.auth.setToken(oauth.getToken());
+            gapi.client.load("calendar","v3",function(){
+                $("#login").slideDown("slow");
+                var request = gapi.client.calendar.events.list({
+                    'calendarId': "ricky.tan.xin@gmail.com"
+                });
+            });
         }
+        else {
+            $("#auth").click(function(){  
+                chrome.tabs.create({
+                    "url":chrome.extension.getURL("auth.html")
+                });
+            });
+        }
+    }
+    App.onload = function() {
+        App.onauth();
+    }
+    App.onlist = function(resp) {
+        var eventList = JSON.parser(resp);
+        console.log(resp);
     }
     function check_login_info() {
         return true;
     }
-    $("#auth").click(auth);
     $("#login").submit(function(){
         if (check_login_info()){
             var no = $("input[name=user_id]").val();
@@ -75,23 +105,21 @@ $(function(){
                     if (response.redirect == this.url) {
                         window.location.href = response.redirect;
                     }
-                    else {
-                }
                 }, 
                 error: function(xhr, textStatus, errorThrown) { 
                     $.get(HOST+COURSE,function(html){
-						var script = html.match(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi)[0];
-						html = html.replace(/<head\b[^<]*(?:(?!<\/head>)<[^<]*)*<\/head>/gi,"");
-						html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"");
+                        var script = html.match(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi)[0];
+                        html = html.replace(/<head\b[^<]*(?:(?!<\/head>)<[^<]*)*<\/head>/gi,"");
+                        html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"");
                         document.getElementById("builder").innerHTML = html;
-						script = /<script\b[^>]*>([\s\S]*?)<\/script>/gi.exec(script)[1];
-						var s = document.createElement("script");
-						s.setAttribute("type","text/javascript");
-						s.innerHTML = script;
-						document.getElementsByTagName("head")[0].appendChild(s);
+                        script = /<script\b[^>]*>([\s\S]*?)<\/script>/gi.exec(script)[1];
+                        var s = document.createElement("script");
+                        s.setAttribute("type","text/javascript");
+                        s.innerHTML = script;
+                        document.getElementsByTagName("head")[0].appendChild(s);
                         loadjs("js/graduate.parser.js",function(){
                             var courses = Parser.parse(document.getElementById("kbT1"));
-							var a = 0;
+                            var a = 0;
                         });
                     });
                 }
@@ -100,3 +128,7 @@ $(function(){
         return false;
     });
 });
+
+function clientloaded(){
+    App.onload();
+}

@@ -1,29 +1,38 @@
 ﻿{
-  //"manifest_version": 2,
-  "content_security_policy": "script-src 'self' 'unsafe-inline' https://apis.google.com; object-src 'self'; default-src 'self' 'unsafe-inline' http://grsinfo.zju.edu.cn/ https://accounts.google.com/",
-  "name": "浙大课程表同步",
-  "version": "0.0.1",
-  "description": "此插件用于将浙大研究生的课表同步到Google日历",
-  "icons": {
-    "128":"icon.png",
-    "48":"icon.png"
-  },
-  "browser_action": {
-    "default_title": "课程表同步助手",
-    "default_icon": "icon.png",
-    "default_popup":"index.html"
-  },
-  //"background_page":"background.html",
-  "options_page": "options.html",
-  "permissions": [
+    //"manifest_version": 2,
+    "content_security_policy": "script-src 'self' 'unsafe-inline' https://*.google.com; object-src 'self';",// default-src 'self' 'unsafe-inline' http://grsinfo.zju.edu.cn/ https://accounts.google.com/",
+    "name": "浙大课程表同步",
+    "version": "0.0.1",
+    "description": "此插件用于将浙大研究生的课表同步到Google日历",
+    "icons": {
+        "128":"icon.png",
+        "48":"icon.png"
+    },
+    "browser_action": {
+        "default_title": "课程表同步助手",
+        "default_icon": "icon.png",
+        "default_popup":"index.html"
+    },
+    "background": {
+        "scripts": [
+        "chrome_ex_oauthsimple.js",
+        "chrome_ex_oauth.js",
+        "background.js"
+        ]
+    },
+    "options_page": "options.html",
+    "permissions": [
     "https://apis.google.com/",
     "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp",
     "http://g.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp",
     "https://www.googleapis.com/auth/calendar",
     "https://www.googleapis.com/auth/calendar.readonly",
+    "https://www.google.com/accounts/OAuthGetRequestToken",
+    "https://www.google.com/accounts/OAuthAuthorizeToken",
+    "https://www.google.com/accounts/OAuthGetAccessToken",
     "<all_urls>",
     "tabs"
-  ],
-  "homepage_url":"http://www.zjustu.org/"
-  //"update_url":"http://nav.8866.org/daohang/plugin/update.xml"
+    ],
+    "homepage_url":"http://www.zjustu.org/"
+//"update_url":"http://nav.8866.org/daohang/plugin/update.xml"
 }
