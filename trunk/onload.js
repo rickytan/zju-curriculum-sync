@@ -10,7 +10,7 @@ window.onload = function() {
         });
     } else {
         oauth.initOAuthFlow(function(token, secret) {
-            alert("yes");
+            //alert("yes");
         });
     }
 }
