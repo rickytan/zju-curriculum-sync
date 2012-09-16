@@ -60,6 +60,7 @@ $(function(){
     }
     App.postToGoogle = function(courses) {
         function postSingle(course,callback) {
+            try{
             var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];
             var config = Config.getDuration();
             var semesterconfig = Config.getSemester();
@@ -104,21 +105,33 @@ $(function(){
                 if (!result.error)
                     callback();
                 else {
+                    $("#fail").show(300).find("#msg").text("导入失败");
                 }
             }, request);
+            }catch(e){
+                $("#fail").show(300).find("#msg").text("数据格式错误");
+            }
         }
         function postAll() {
             var course = courses.shift();
             if (course !== undefined)
                 postSingle(course,postAll);
-            else {  // Finished !
-                
+            else {
+                $(".mask").fadeOut(200);
+                $("#success").show(300);
+            }
         }
-        }
-        if (courses instanceof Array)
+        if (courses instanceof Array) {
+            $(body).append("<div class='mask'></div>");
             postAll();
+        }
     }
     function check_login_info() {
+        var form = document.getElementById("login");
+        if (!form["user_id"].value || !form["password"].value) {
+            $("#fail").show(300).find("#msg").text("请输入完整");
+            return false;
+        }
         return true;
     }
     $("#login").submit(function(){
@@ -139,34 +152,41 @@ $(function(){
                         window.location.href = response.redirect;
                     }
                 }, 
-                error: function(xhr, textStatus, errorThrown) { 
-                    $.get(HOST+COURSE,function(html){
-                        var script = html.match(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi)[0];
-                        html = html.replace(/<head\b[^<]*(?:(?!<\/head>)<[^<]*)*<\/head>/gi,"");
-                        html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"");
-                        document.getElementById("builder").innerHTML = html;
-                        script = /<script\b[^>]*>([\s\S]*?)<\/script>/gi.exec(script)[1];
-                        var s = document.createElement("script");
-                        s.setAttribute("type","text/javascript");
-                        s.innerHTML = script;
-                        document.getElementsByTagName("head")[0].appendChild(s);
+                error: function(xhr, textStatus, errorThrown) {
+                    if (/登录/gi.test(xhr.responseText)) {
+                        $("#fail").show(300).find("#msg").text("登录失败");
+                    }
+                    else {
+                        $.get(HOST+COURSE,function(html){
+                            var script = html.match(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi)[0];
+                            html = html.replace(/<head\b[^<]*(?:(?!<\/head>)<[^<]*)*<\/head>/gi,"");
+                            html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,"");
+                            document.getElementById("builder").innerHTML = html;
+                            script = /<script\b[^>]*>([\s\S]*?)<\/script>/gi.exec(script)[1];
+                            var s = document.createElement("script");
+                            s.setAttribute("type","text/javascript");
+                            s.innerHTML = script;
+                            document.getElementsByTagName("head")[0].appendChild(s);
                         
-                        var semesters = ["春","夏","秋","冬"];
-                        var t1 = document.getElementById("kbT1");
-                        var semester1 = semesters.indexOf(t1.previousSibling.textContent.trim().match(/[春夏秋冬]/)[0]);
-                        if (semester1 == -1) {
-                            semester1 = 4;
-                        }
-                        var courses1 = Parser.parse(t1,semester1);
+                            var semesters = ["春","夏","秋","冬"];
+                            var t1 = document.getElementById("kbT1");
+                            var semester1 = semesters.indexOf(t1.previousSibling.textContent.trim().match(/[春夏秋冬]/)[0]);
+                            if (semester1 == -1) {
+                                semester1 = 4;
+                            }
+                            var courses1 = Parser.parse(t1,semester1);
                         
-                        var t2 = document.getElementById("kbT2");
-                        var semester2 = semesters.indexOf(t2.previousSibling.textContent.trim().match(/[春夏秋冬]/)[0]);
-                        if (semester2 == -1) {
-                            semester2 = 4;
-                        }
-                        var courses2 = Parser.parse(t2,semester2);
-                        App.postToGoogle(courses1.concat(courses2));
-                    });
+                            var t2 = document.getElementById("kbT2");
+                            var semester2 = semesters.indexOf(t2.previousSibling.textContent.trim().match(/[春夏秋冬]/)[0]);
+                            if (semester2 == -1) {
+                                semester2 = 4;
+                            }
+                            var courses2 = Parser.parse(t2,semester2);
+                            App.postToGoogle(courses1.concat(courses2));
+                        }).error(function(){
+                            $("#fail").show(300).find("#msg").text("你确定选课网没挂？");
+                        });
+                    }
                 }
             });
         }

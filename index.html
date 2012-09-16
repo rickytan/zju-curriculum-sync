@@ -10,9 +10,22 @@
         <script type="text/javascript" src="./js/graduate.parser.js"></script>
         <style type="text/css">
             body {
-                width:160px;
+                width:200px;
                 height:auto;
                 marigin:5px;
+            }
+            .mask {
+                background: url("img/spinner.gif") 50% 50% no-repeat;
+                background-color: #000;
+                opacity:0.6;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                top: 0px;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                z-index: 99999999;
             }
         </style>
     </head>
@@ -25,7 +38,22 @@
             <label for="">密码：</label><input tabindex=2 type="password" name="password" maxlength="20" />
             <input id="loginBtn" type="submit" value="登录" />
         </form>
-        <div id="info"></div>
+        <div id="success" class="ui-helper-hidden">
+            <div class="ui-widget">
+                <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                    <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                        <strong>已经成功导入！</strong><a target="_blank" href="https://www.google.com/calendar/render">去Google日历看看</a></p>
+                </div>
+            </div>
+        </div>
+        <div id="fail" class="ui-helper-hidden">
+            <div class="ui-widget">
+                <div class="ui-state-error ui-corner-all" style="padding: 0 .7em;">
+                    <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+                        <strong>出错了……</strong><span id="msg"></span></p>
+                </div>
+            </div>
+        </div>
         <div id="builder" style="display: none"></div>
     </body>
 </html>
