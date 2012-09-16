@@ -48,7 +48,7 @@ var Parser = Parser || {};
         return computeTableHeaderCellIndexes(table)[cell.parentNode.rowIndex+"-"+cell.cellIndex];
     }
 
-    p.parse = function(table){
+    p.parse = function(table,semester){
         var doms = table.querySelectorAll("input[value=NaNNaNNaNNaN]");
         var result = [];
         for (var i=0;i<doms.length;++i) {
@@ -69,7 +69,8 @@ var Parser = Parser || {};
                 "length":courseLength,
                 "name":courseName,
                 "pos":courseLocation,
-                "time":courseDuration
+                "time":courseDuration,
+                "semester":semester
             };
         }
         return result;

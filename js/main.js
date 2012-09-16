@@ -20,40 +20,18 @@ var oauth = oauth || chrome.extension.getBackgroundPage().oauth;
 var App = App || {};
 
 $(function(){
-    var apiKey = "AIzaSyCwzksAHjNxNW505HsgOjr0PWjdsrFQWxg";
-    var clientId = '817070761549.apps.googleusercontent.com';
+    var apiKey = "AIzaSyBvRRGf1uUfCewgR2Rwm6JSHa0vFmMu3IM";
+    var clientId = '142181023024.apps.googleusercontent.com';
     var scope = 'https://www.googleapis.com/auth/calendar';
     
     var HOST = "http://grsinfo.zju.edu.cn/";
     var LOGIN = "login_s_code.jsp";
     var COURSE = "cultivate/selectles/selectbefore/xkhxkbcx.jsp";
-    App.auth = function () {
-        gapi.auth.init(function(){
-            var config = {
-                'client_id': clientId,
-                'scope': scope 
-            };
-            gapi.auth.authorize(config, function() {
-                console.log('login complete');
-                console.log(gapi.auth.getToken());
-                gapi.client.load("calendar","v3",function(){
-                    var request = gapi.client.calendar.events.list({
-                        'calendarId': "ricky.tan.xin@gmail.com"
-                    });
-                    request.execute(function(resp) {
-                        console.log('result:');
-                        console.log(resp);
-
-                        for (var i = 0; i < resp.items.length; i++) {
-                            var li = document.createElement('li');
-                            li.appendChild(document.createTextNode(resp.items[i].summary));
-                            document.getElementById('events').appendChild(li);
-                        }
-                    });
-                });
-            });
-            return false;
-        });
+    function buildDatetime(day,time) {
+        return {
+            "dateTime":day+"T"+time+":00+08:00",
+            "timeZone":"Asia/Shanghai"
+        }
     }
     App.onauth = function() {
         if (oauth.hasToken()) {
@@ -63,18 +41,7 @@ $(function(){
                     window.close();
                 });
             });
-            loadjs("https://apis.google.com/js/client.js",function(){
-                gapi.auth.setToken(oauth.getToken());
-                gapi.client.load("calendar","v3",function(){
-                    $("#login").slideDown("slow");
-                    var request = gapi.client.calendar.events.list({
-                        'calendarId': "ricky.tan.xin@gmail.com"
-                    });
-                    request.execute(function(resp){
-                        console.log(resp);
-                    });
-                });
-            });
+            $("#login").slideDown("slow");
         }
         else {
             $("#auth").click(function(){  
@@ -89,7 +56,67 @@ $(function(){
     }
     App.onlist = function(resp) {
         var eventList = JSON.parser(resp);
-        console.log(resp);
+        console.log(eventList);
+    }
+    App.postToGoogle = function(courses) {
+        function postSingle(course,callback) {
+            var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];
+            var config = Config.getDuration();
+            var semesterconfig = Config.getSemester();
+            var d = new Date(new Date().getFullYear()+"-"+semesterconfig[course.semester].start);
+            d.setTime(d.getTime()+3600000*24*(((course.weekday+7) - d.getDay())%7));
+            var startTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start-1].start);
+            var endTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start+course.length-2].end);
+            var date = new Date(semesterconfig[course.semester].end);
+            date.setFullYear((course.semester >= 3)?new Date().getFullYear()+1:new Date().getFullYear());
+            var recurrence = "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY="+week[course.weekday]+";UNTIL="+$.datepicker.formatDate("yymmdd",date);
+            var url = "https://www.googleapis.com/calendar/v3/calendars/ricky.tan.xin@gmail.com/events";
+            var request = {
+                'method': 'POST',
+                'parameters': {
+                    'key' : apiKey
+                },
+                'headers': {
+                    'GData-Version': '3.0',
+                    'Content-Type': 'application/json'
+                },
+                'body': JSON.stringify({
+                    "end": endTime,
+                    "start": startTime,
+                    "location": course.pos,
+                    "summary": course.name,
+                    "description": course.time,
+                    "recurrence": [
+                    recurrence
+                    ],
+                    "reminders": {
+                        "useDefault": false,
+                        "overrides": [{
+                            "method": "popup",
+                            "minutes": 15
+                        }]
+                    }
+                })
+            };
+            oauth.sendSignedRequest(url, function(json){
+                var result = JSON.parse(json);
+                console.log(result);
+                if (!result.error)
+                    callback();
+                else {
+                }
+            }, request);
+        }
+        function postAll() {
+            var course = courses.shift();
+            if (course !== undefined)
+                postSingle(course,postAll);
+            else {  // Finished !
+                
+        }
+        }
+        if (courses instanceof Array)
+            postAll();
     }
     function check_login_info() {
         return true;
@@ -123,10 +150,22 @@ $(function(){
                         s.setAttribute("type","text/javascript");
                         s.innerHTML = script;
                         document.getElementsByTagName("head")[0].appendChild(s);
-                        loadjs("js/graduate.parser.js",function(){
-                            var courses = Parser.parse(document.getElementById("kbT1"));
-                            var a = 0;
-                        });
+                        
+                        var semesters = ["春","夏","秋","冬"];
+                        var t1 = document.getElementById("kbT1");
+                        var semester1 = semesters.indexOf(t1.previousSibling.textContent.trim().match(/[春夏秋冬]/)[0]);
+                        if (semester1 == -1) {
+                            semester1 = 4;
+                        }
+                        var courses1 = Parser.parse(t1,semester1);
+                        
+                        var t2 = document.getElementById("kbT2");
+                        var semester2 = semesters.indexOf(t2.previousSibling.textContent.trim().match(/[春夏秋冬]/)[0]);
+                        if (semester2 == -1) {
+                            semester2 = 4;
+                        }
+                        var courses2 = Parser.parse(t2,semester2);
+                        App.postToGoogle(courses1.concat(courses2));
                     });
                 }
             });
