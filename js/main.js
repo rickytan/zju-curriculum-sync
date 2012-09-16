@@ -61,54 +61,56 @@ $(function(){
     App.postToGoogle = function(courses) {
         function postSingle(course,callback) {
             try{
-            var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];
-            var config = Config.getDuration();
-            var semesterconfig = Config.getSemester();
-            var d = new Date(new Date().getFullYear()+"-"+semesterconfig[course.semester].start);
-            d.setTime(d.getTime()+3600000*24*(((course.weekday+7) - d.getDay())%7));
-            var startTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start-1].start);
-            var endTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start+course.length-2].end);
-            var date = new Date(semesterconfig[course.semester].end);
-            date.setFullYear((course.semester >= 3)?new Date().getFullYear()+1:new Date().getFullYear());
-            var recurrence = "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY="+week[course.weekday]+";UNTIL="+$.datepicker.formatDate("yymmdd",date);
-            var url = "https://www.googleapis.com/calendar/v3/calendars/ricky.tan.xin@gmail.com/events";
-            var request = {
-                'method': 'POST',
-                'parameters': {
-                    'key' : apiKey
-                },
-                'headers': {
-                    'GData-Version': '3.0',
-                    'Content-Type': 'application/json'
-                },
-                'body': JSON.stringify({
-                    "end": endTime,
-                    "start": startTime,
-                    "location": course.pos,
-                    "summary": course.name,
-                    "description": course.time,
-                    "recurrence": [
-                    recurrence
-                    ],
-                    "reminders": {
-                        "useDefault": false,
-                        "overrides": [{
-                            "method": "popup",
-                            "minutes": 15
-                        }]
+                var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];
+                var config = Config.getDuration();
+                var semesterconfig = Config.getSemester();
+                var d = new Date(new Date().getFullYear()+"-"+semesterconfig[course.semester].start);
+                d.setTime(d.getTime()+3600000*24*(((course.weekday+7) - d.getDay())%7));
+                var startTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start-1].start);
+                var endTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start+course.length-2].end);
+                var date = new Date(semesterconfig[course.semester].end);
+                date.setFullYear((course.semester >= 3)?new Date().getFullYear()+1:new Date().getFullYear());
+                var recurrence = "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY="+week[course.weekday]+";UNTIL="+$.datepicker.formatDate("yymmdd",date);
+                var url = "https://www.googleapis.com/calendar/v3/calendars/ricky.tan.xin@gmail.com/events";
+                var request = {
+                    'method': 'POST',
+                    'parameters': {
+                        'key' : apiKey
+                    },
+                    'headers': {
+                        'GData-Version': '3.0',
+                        'Content-Type': 'application/json'
+                    },
+                    'body': JSON.stringify({
+                        "end": endTime,
+                        "start": startTime,
+                        "location": course.pos,
+                        "summary": course.name,
+                        "description": course.time,
+                        "recurrence": [
+                        recurrence
+                        ],
+                        "reminders": {
+                            "useDefault": false,
+                            "overrides": [{
+                                "method": "popup",
+                                "minutes": 15
+                            }]
+                        }
+                    })
+                };
+                oauth.sendSignedRequest(url, function(json){
+                    var result = JSON.parse(json);
+                    console.log(result);
+                    if (!result.error)
+                        callback();
+                    else {
+                        $(".mask").fadeOut(200);
+                        $("#fail").show(300).find("#msg").text("导入失败");
                     }
-                })
-            };
-            oauth.sendSignedRequest(url, function(json){
-                var result = JSON.parse(json);
-                console.log(result);
-                if (!result.error)
-                    callback();
-                else {
-                    $("#fail").show(300).find("#msg").text("导入失败");
-                }
-            }, request);
+                }, request);
             }catch(e){
+                $(".mask").fadeOut(200);
                 $("#fail").show(300).find("#msg").text("数据格式错误");
             }
         }
@@ -122,7 +124,6 @@ $(function(){
             }
         }
         if (courses instanceof Array) {
-            $(body).append("<div class='mask'></div>");
             postAll();
         }
     }
@@ -157,6 +158,7 @@ $(function(){
                         $("#fail").show(300).find("#msg").text("登录失败");
                     }
                     else {
+                        $("body").append("<div class='mask'></div>");
                         $.get(HOST+COURSE,function(html){
                             var script = html.match(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi)[0];
                             html = html.replace(/<head\b[^<]*(?:(?!<\/head>)<[^<]*)*<\/head>/gi,"");
@@ -184,6 +186,7 @@ $(function(){
                             var courses2 = Parser.parse(t2,semester2);
                             App.postToGoogle(courses1.concat(courses2));
                         }).error(function(){
+                            $(".mask").fadeOut(200);
                             $("#fail").show(300).find("#msg").text("你确定选课网没挂？");
                         });
                     }
