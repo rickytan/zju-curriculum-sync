@@ -1,21 +1,21 @@
 <html>
   <head>
-    <script src="https://apis.google.com/js/client.js"></script>
-    <script>
-      function auth() {
-        var config = {
-          'client_id': '817070761549.apps.googleusercontent.com',
-          'scope': 'https://www.googleapis.com/auth/calendar'
-        };
-        gapi.auth.authorize(config, function() {
-          console.log('login complete');
-          console.log(gapi.auth.getToken());
-        });
-      }
-    </script>
+      <link type="text/css" href="css/smoothness/jquery-ui-1.8.23.custom.css" rel="stylesheet" />
+      <script type="text/javascript" src="./js/jquery-1.8.1.min.js"></script>
+        <script type="text/javascript" src="chrome_ex_oauthsimple.js"></script>
+        <script type="text/javascript" src="chrome_ex_oauth.js"></script>
+        <script type="text/javascript" src="background.js"></script>
+        <script type="text/javascript" src="js/options.js"></script>
   </head>
 
   <body>
-    <button onclick="auth();">Authorize</button>
+       <div class="ui-widget ui-helper-hidden" id="info">
+                <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+                    <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                        <strong>已经成功导入！</strong><a target="_blank" href="https://www.google.com/calendar/render">去Google日历看看</a></p>
+                </div>
+            </div>
+      <h1>这是选项页，正在建设中……</h1>
+      <hr />
   </body>
 </html>
