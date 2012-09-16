@@ -59,73 +59,83 @@ $(function(){
         console.log(eventList);
     }
     App.postToGoogle = function(courses) {
-        function postSingle(course,callback) {
-            try{
-                var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];
-                var config = Config.getDuration();
-                var semesterconfig = Config.getSemester();
-                var d = new Date(new Date().getFullYear()+"-"+semesterconfig[course.semester].start);
-                d.setTime(d.getTime()+3600000*24*(((course.weekday+7) - d.getDay())%7));
-                var startTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start-1].start);
-                var endTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start+course.length-2].end);
-                var date = new Date(semesterconfig[course.semester].end);
-                date.setFullYear((course.semester >= 3)?new Date().getFullYear()+1:new Date().getFullYear());
-                var recurrence = "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY="+week[course.weekday]+";UNTIL="+$.datepicker.formatDate("yymmdd",date);
-                var url = "https://www.googleapis.com/calendar/v3/calendars/ricky.tan.xin@gmail.com/events";
-                var request = {
-                    'method': 'POST',
-                    'parameters': {
-                        'key' : apiKey
-                    },
-                    'headers': {
-                        'GData-Version': '3.0',
-                        'Content-Type': 'application/json'
-                    },
-                    'body': JSON.stringify({
-                        "end": endTime,
-                        "start": startTime,
-                        "location": course.pos,
-                        "summary": course.name,
-                        "description": course.time,
-                        "recurrence": [
-                        recurrence
-                        ],
-                        "reminders": {
-                            "useDefault": false,
-                            "overrides": [{
-                                "method": "popup",
-                                "minutes": 15
-                            }]
-                        }
-                    })
-                };
-                oauth.sendSignedRequest(url, function(json){
-                    var result = JSON.parse(json);
-                    console.log(result);
-                    if (!result.error)
-                        callback();
+        var genCals = "https://www.googleapis.com/calendar/v3/users/me/calendarList";
+        oauth.sendSignedRequest(genCals, function(json){
+            var result = JSON.parse(json);
+            if (!result.error){
+                var url = "https://www.googleapis.com/calendar/v3/calendars/"+result.items[result.items.length-1]+"/events";
+                function postSingle(course,callback) {
+                    try{
+                        var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];
+                        var config = Config.getDuration();
+                        var semesterconfig = Config.getSemester();
+                        var d = new Date(new Date().getFullYear()+"-"+semesterconfig[course.semester].start);
+                        d.setTime(d.getTime()+3600000*24*(((course.weekday+7) - d.getDay())%7));
+                        var startTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start-1].start);
+                        var endTime = buildDatetime($.datepicker.formatDate("yy-mm-dd",d),config[course.start+course.length-2].end);
+                        var date = new Date(semesterconfig[course.semester].end);
+                        date.setFullYear((course.semester >= 3)?new Date().getFullYear()+1:new Date().getFullYear());
+                        var recurrence = "RRULE:FREQ=WEEKLY;INTERVAL=1;BYDAY="+week[course.weekday]+";UNTIL="+$.datepicker.formatDate("yymmdd",date);
+                        var request = {
+                            'method': 'POST',
+                            'parameters': {
+                                'key' : apiKey
+                            },
+                            'headers': {
+                                'GData-Version': '3.0',
+                                'Content-Type': 'application/json'
+                            },
+                            'body': JSON.stringify({
+                                "end": endTime,
+                                "start": startTime,
+                                "location": course.pos,
+                                "summary": course.name,
+                                "description": course.time,
+                                "recurrence": [
+                                recurrence
+                                ],
+                                "reminders": {
+                                    "useDefault": false,
+                                    "overrides": [{
+                                        "method": "popup",
+                                        "minutes": 15
+                                    }]
+                                }
+                            })
+                        };
+                        oauth.sendSignedRequest(url, function(json){
+                            var result = JSON.parse(json);
+                            console.log(result);
+                            if (!result.error)
+                                callback();
+                            else {
+                                $(".mask").fadeOut(200);
+                                $("#fail").show(300).find("#msg").text("导入失败");
+                            }
+                        }, request);
+                    }catch(e){
+                        $(".mask").fadeOut(200);
+                        $("#fail").show(300).find("#msg").text("数据格式错误");
+                    }
+                }
+                function postAll() {
+                    var course = courses.shift();
+                    if (course !== undefined)
+                        postSingle(course,postAll);
                     else {
                         $(".mask").fadeOut(200);
-                        $("#fail").show(300).find("#msg").text("导入失败");
+                        $("#success").show(300);
                     }
-                }, request);
-            }catch(e){
-                $(".mask").fadeOut(200);
-                $("#fail").show(300).find("#msg").text("数据格式错误");
+                }
+                if (courses instanceof Array) {
+                    postAll();
+                }
             }
-        }
-        function postAll() {
-            var course = courses.shift();
-            if (course !== undefined)
-                postSingle(course,postAll);
             else {
                 $(".mask").fadeOut(200);
-                $("#success").show(300);
+                $("#fail").show(300).find("#msg").text(result.error);
             }
-        }
-        if (courses instanceof Array) {
-            postAll();
-        }
+        }, null);
     }
     function check_login_info() {
         var form = document.getElementById("login");
