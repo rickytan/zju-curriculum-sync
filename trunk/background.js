@@ -5,25 +5,40 @@ var Config = Config || {};
 (function(){
     Config.defaultDuration = [
         {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"},
-        {"start":"08:00","end":"08:45"}
+        {"start":"08:50","end":"09:35"},
+        {"start":"09:50","end":"10:30"},
+        {"start":"10:40","end":"11:25"},
+        {"start":"11:30","end":"12:15"},
+        {"start":"13:15","end":"14:00"},
+        {"start":"14:05","end":"14:50"},
+        {"start":"14:55","end":"15:40"},
+        {"start":"15:55","end":"16:40"},
+        {"start":"16:45","end":"17:30"},
+        {"start":"18:30","end":"19:15"},
+        {"start":"19:20","end":"20:05"},
+        {"start":"20:10","end":"20:55"},
+        {"start":"21:00","end":"21:45"}
+    ];
+    Config.defaultSemester = [
+        {"start":"02-28","end":"05-01"},
+        {"start":"05-02","end":"07-08"},
+        {"start":"09-06","end":"11-10"},
+        {"start":"11-16","end":"01-15"},
+        {"start":"01-01","end":"12-31"}
     ];
     Config.setupDefault = function() {
         if (!window.localStorage["CourseDuration"]) {
-            window.localStorage["CouserDuration"] = JSON.stringify(Config.defaultDuration);
+            window.localStorage["CourseDuration"] = JSON.stringify(Config.defaultDuration);
+        }
+        if (!window.localStorage["SchoolSemester"]) {
+            window.localStorage["SchoolSemester"] = JSON.stringify(Config.defaultSemester);
         }
     }
+    Config.getSemester = function() {
+        return JSON.parse(window.localStorage["SchoolSemester"]);
+    }
     Config.getDuration = function() {
-        var duration = window.localStorage["CourseDuration"];
-        return duration;
+        return JSON.parse(window.localStorage["CourseDuration"]);
     }
     Config.setDuration = function(duration) {
         if (typeof duration === "string") {
@@ -38,64 +53,11 @@ var oauth = ChromeExOAuth.initBackgroundPage({
     'request_url' : 'https://www.google.com/accounts/OAuthGetRequestToken',
     'authorize_url' : 'https://www.google.com/accounts/OAuthAuthorizeToken',
     'access_url' : 'https://www.google.com/accounts/OAuthGetAccessToken',
-    'consumer_key' : '817070761549.apps.googleusercontent.com',
-    'consumer_secret' : 'syFNEiQY4IWg8uKWwwZcFjW8',
+    'consumer_key' : '142181023024.apps.googleusercontent.com',
+    'consumer_secret' : 'pxCdMaMj2Ny4xty4QqDXn_xX',
     'scope' : 'https://www.googleapis.com/auth/calendar',
     'app_name' : '浙大课表同步助手'
 });
-
-function setIcon() {
-    if (oauth.hasToken()) {
-        chrome.browserAction.setIcon({
-            'path' : 'img/icon-19-on.png'
-        });
-    } else {
-        chrome.browserAction.setIcon({
-            'path' : 'img/icon-19-off.png'
-        });
-    }
-};
-
-function onContacts(text, xhr) {
-    contacts = [];
-    var data = JSON.parse(text);
-    for (var i = 0, entry; entry = data.feed.entry[i]; i++) {
-        var contact = {
-            'name' : entry['title']['$t'],
-            'id' : entry['id']['$t'],
-            'emails' : []
-        };
-
-        if (entry['gd$email']) {
-            var emails = entry['gd$email'];
-            for (var j = 0, email; email = emails[j]; j++) {
-                contact['emails'].push(email['address']);
-            }
-        }
-
-        if (!contact['name']) {
-            contact['name'] = contact['emails'][0] || "<Unknown>";
-        }
-        contacts.push(contact);
-    }
-
-    chrome.tabs.create({
-        'url' : 'contacts.html'
-    });
-};
-
-function getContacts() {
-    oauth.authorize(function() {
-        
-        var url = "http://www.google.com/m8/feeds/contacts/default/full";
-        oauth.sendSignedRequest(url, onContacts, {
-            'parameters' : {
-                'alt' : 'json',
-                'max-results' : 100
-            }
-        });
-    });
-};
 
 function logout() {
     oauth.clearTokens();

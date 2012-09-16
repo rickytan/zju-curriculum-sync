@@ -16,27 +16,9 @@
         <script type="text/javascript" src="chrome_ex_oauthsimple.js"></script>
         <script type="text/javascript" src="chrome_ex_oauth.js"></script>
         <script type="text/javascript" src="background.js"></script>
-        <script type="text/javascript">
-
-            function loadHandler() {
-                // We may be called directly, as options, or as result of a
-                // redirect from OAuth1 flow
-                var params = ChromeExOAuth.getQueryStringParams();
-                if (params['chromeexoauthcallback'] == 'true') {
-                    // End of the oauth request flow, get access token
-                    oauth.initOAuthFlow(function(token, secret) {
-                        window.location = 'options.html';
-                    });
-                } else {
-                    oauth.initOAuthFlow(function(token, secret) {
-                        alert("yes");
-                    });
-                }
-            }
-            
-        </script>
+        <script type="text/javascript" src="onload.js"></script>
     </head>
-    <body onload="loadHandler()">
+    <body>
         Redirecting...
     </body>
 </html>
