@@ -63,7 +63,7 @@ $(function(){
         oauth.sendSignedRequest(genCals, function(json){
             var result = JSON.parse(json);
             if (!result.error){
-                var url = "https://www.googleapis.com/calendar/v3/calendars/"+result.items[result.items.length-1]+"/events";
+                var url = "https://www.googleapis.com/calendar/v3/calendars/"+result.items[result.items.length-1].id+"/events";
                 function postSingle(course,callback) {
                     try{
                         var week = ["SU","MO","TU","WE","TH","FR","SA","SU"];

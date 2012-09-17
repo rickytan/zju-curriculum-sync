@@ -1,83 +1,8 @@
-/* OAuthSimple
-  * A simpler version of OAuth
-  *
-  * author:     jr conlin
-  * mail:       src@anticipatr.com
-  * copyright:  unitedHeroes.net
-  * version:    1.0
-  * url:        http://unitedHeroes.net/OAuthSimple
-  *
-  * Copyright (c) 2009, unitedHeroes.net
-  * All rights reserved.
-  *
-  * Redistribution and use in source and binary forms, with or without
-  * modification, are permitted provided that the following conditions are met:
-  *     * Redistributions of source code must retain the above copyright
-  *       notice, this list of conditions and the following disclaimer.
-  *     * Redistributions in binary form must reproduce the above copyright
-  *       notice, this list of conditions and the following disclaimer in the
-  *       documentation and/or other materials provided with the distribution.
-  *     * Neither the name of the unitedHeroes.net nor the
-  *       names of its contributors may be used to endorse or promote products
-  *       derived from this software without specific prior written permission.
-  *
-  * THIS SOFTWARE IS PROVIDED BY UNITEDHEROES.NET ''AS IS'' AND ANY
-  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  * DISCLAIMED. IN NO EVENT SHALL UNITEDHEROES.NET BE LIABLE FOR ANY
-  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 var OAuthSimple;
 
 if (OAuthSimple === undefined)
 {
-    /* Simple OAuth
-     *
-     * This class only builds the OAuth elements, it does not do the actual
-     * transmission or reception of the tokens. It does not validate elements
-     * of the token. It is for client use only.
-     *
-     * api_key is the API key, also known as the OAuth consumer key
-     * shared_secret is the shared secret (duh).
-     *
-     * Both the api_key and shared_secret are generally provided by the site
-     * offering OAuth services. You need to specify them at object creation
-     * because nobody <explative>ing uses OAuth without that minimal set of
-     * signatures.
-     *
-     * If you want to use the higher order security that comes from the
-     * OAuth token (sorry, I don't provide the functions to fetch that because
-     * sites aren't horribly consistent about how they offer that), you need to
-     * pass those in either with .setTokensAndSecrets() or as an argument to the
-     * .sign() or .getHeaderString() functions.
-     *
-     * Example:
-       <code>
-        var oauthObject = OAuthSimple().sign({path:'http://example.com/rest/',
-                                              parameters: 'foo=bar&gorp=banana',
-                                              signatures:{
-                                                api_key:'12345abcd',
-                                                shared_secret:'xyz-5309'
-                                             }});
-        document.getElementById('someLink').href=oauthObject.signed_url;
-       </code>
-     *
-     * that will sign as a "GET" using "SHA1-MAC" the url. If you need more than
-     * that, read on, McDuff.
-     */
-
-    /** OAuthSimple creator
-     *
-     * Create an instance of OAuthSimple
-     *
-     * @param api_key {string}       The API Key (sometimes referred to as the consumer key) This value is usually supplied by the site you wish to use.
-     * @param shared_secret (string) The shared secret. This value is also usually provided by the site you wish to use.
-     */
     OAuthSimple = function (consumer_key,shared_secret)
     {
 /*        if (api_key == undefined)
