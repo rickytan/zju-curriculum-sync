@@ -1,4 +1,4 @@
-﻿{
+ {
     //"manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-inline' https://*.google.com ;",// default-src 'self' 'unsafe-inline' http://grsinfo.zju.edu.cn/ https://www.googleapis.com/",
     "name": "浙大课程表同步",
@@ -36,5 +36,5 @@
     "tabs"
     ],
     "homepage_url":"http://www.zjustu.org/",
-    "update_url":"http://zju-curriculum-sync.googlecode.com/files/update.xml"
+    "update_url":"http://zju-curriculum-sync.googlecode.com/svn/branch/update.xml"
 }
