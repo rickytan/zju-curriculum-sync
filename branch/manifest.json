@@ -2,7 +2,7 @@
     //"manifest_version": 2,
     "content_security_policy": "script-src 'self' 'unsafe-inline' https://*.google.com ;",// default-src 'self' 'unsafe-inline' http://grsinfo.zju.edu.cn/ https://www.googleapis.com/",
     "name": "浙大课程表同步",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "description": "此插件用于将浙大研究生的课表同步到Google日历，并使选课网兼容chrome",
     "icons": {
         "128":"icon.png",
@@ -12,13 +12,6 @@
         "default_title": "课程表同步助手",
         "default_icon": "icon.png",
         "default_popup":"index.html"
-    },
-    "background": {
-        "scripts": [
-        "chrome_ex_oauthsimple.js",
-        "chrome_ex_oauth.js",
-        "background.min.js"
-        ]
     },
     "content_scripts": [
     {
@@ -31,9 +24,7 @@
         "js": ["js/loader.js"]
     }
     ],
-    "web_accessible_resources": [
-    "js/out.js"
-    ],
+    "web_accessible_resources": ["js/out.js"],
     "options_page": "options.html",
     "permissions": [
     "http://grsinfo.zju.edu.cn/cultivate/selectles/selectbefore/xkhxkbcx.jsp",
